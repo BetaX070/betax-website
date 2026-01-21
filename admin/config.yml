@@ -1,0 +1,129 @@
+backend:
+  name: git-gateway
+  branch: main # Branch to update (main or master)
+
+# Publish mode: editorial workflow allows draft/review/publish
+publish_mode: simple
+
+# Media files will be stored in the repo
+media_folder: "assets/uploads" # Where media files will be stored
+public_folder: "/assets/uploads" # The public path to media files
+
+collections:
+  # Homepage Content
+  - name: "homepage"
+    label: "Homepage"
+    files:
+      - label: "Homepage Content"
+        name: "homepage"
+        file: "_data/homepage.json"
+        fields:
+          - label: "Hero Section"
+            name: "hero"
+            widget: "object"
+            fields:
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Subtitle", name: "subtitle", widget: "text"}
+          
+          - label: "Statistics"
+            name: "stats"
+            widget: "list"
+            fields:
+              - {label: "Number", name: "number", widget: "string"}
+              - {label: "Label", name: "label", widget: "string"}
+          
+          - label: "About Section"
+            name: "about"
+            widget: "object"
+            fields:
+              - {label: "Title", name: "title", widget: "string", default: "About BetaX"}
+              - {label: "Content", name: "content", widget: "markdown"}
+
+  # Products / Solutions
+  - name: "products"
+    label: "Products"
+    folder: "_data/products"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Product Name", name: "name", widget: "string"}
+      - {label: "Short Description", name: "description", widget: "text"}
+      - {label: "Full Description", name: "fullDescription", widget: "markdown"}
+      - {label: "Product Image", name: "image", widget: "image"}
+      - {label: "Featured Product", name: "featured", widget: "boolean", default: false}
+      - {label: "Order", name: "order", widget: "number", default: 1, value_type: "int", min: 1}
+      - {label: "Active", name: "active", widget: "boolean", default: true}
+
+  # Team Members
+  - name: "team"
+    label: "Team Members"
+    folder: "_data/team"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Name", name: "name", widget: "string"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Tagline", name: "tagline", widget: "string", required: false}
+      - {label: "Photo", name: "photo", widget: "image"}
+      - {label: "Bio", name: "bio", widget: "markdown", required: false}
+      - {label: "LinkedIn", name: "linkedin", widget: "string", required: false}
+      - {label: "Twitter", name: "twitter", widget: "string", required: false}
+      - {label: "Order", name: "order", widget: "number", default: 1, value_type: "int", min: 1}
+      - {label: "Active", name: "active", widget: "boolean", default: true}
+
+  # News / Blog Posts
+  - name: "news"
+    label: "News & Blog"
+    folder: "_data/news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Author", name: "author", widget: "string", default: "BetaX Team"}
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["Product Launch", "Company News", "Tech Blog", "Case Study", "Industry Insights"]
+      - label: "Post Type"
+        name: "type"
+        widget: "select"
+        options: ["text", "image", "video"]
+        default: "text"
+      - {label: "Featured Post", name: "featured", widget: "boolean", default: false}
+      - {label: "Thumbnail Image", name: "thumbnail", widget: "image", required: false}
+      - {label: "YouTube Video URL", name: "videoUrl", widget: "string", required: false, hint: "Only for video posts"}
+      - {label: "Content", name: "body", widget: "markdown"}
+      - {label: "Published", name: "published", widget: "boolean", default: true}
+
+  # Contact Information
+  - name: "contact"
+    label: "Contact Info"
+    files:
+      - label: "Contact Details"
+        name: "contact"
+        file: "_data/contact.json"
+        fields:
+          - {label: "Email", name: "email", widget: "string"}
+          - {label: "Phone", name: "phone", widget: "string"}
+          - {label: "Address", name: "address", widget: "text"}
+          - label: "Social Media"
+            name: "social"
+            widget: "object"
+            fields:
+              - {label: "LinkedIn", name: "linkedin", widget: "string", required: false}
+              - {label: "Twitter", name: "twitter", widget: "string", required: false}
+              - {label: "Facebook", name: "facebook", widget: "string", required: false}
+
+  # Site Settings
+  - name: "settings"
+    label: "Site Settings"
+    files:
+      - label: "General Settings"
+        name: "general"
+        file: "_data/settings.json"
+        fields:
+          - {label: "Company Name", name: "companyName", widget: "string", default: "BetaX Technologies"}
+          - {label: "Company Tagline", name: "tagline", widget: "string"}
+          - {label: "Footer Text", name: "footerText", widget: "text"}
+          - {label: "SEO Meta Description", name: "metaDescription", widget: "text"}

@@ -1,0 +1,36 @@
+/* Equal height cards for solutions - FORCE 3 in a row */
+.solutions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--space-xl) !important;
+    margin-top: var(--space-2xl);
+}
+
+.solutions-grid>.card,
+.solutions-grid>.product-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+.solutions-grid .solution-content {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+}
+
+.solutions-grid .solution-features {
+    flex: 1 !important;
+    margin-bottom: var(--space-lg);
+}
+
+.solutions-grid .solution-content>div:last-child {
+    margin-top: auto !important;
+}
+
+/* Responsive - stack on smaller screens */
+@media (max-width: 1024px) {
+    .solutions-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "hero": {
+    "title": "Bridging Technology & Reality",
+    "subtitle": "BetaX Technologies delivers cutting-edge smart agriculture, IoT solutions, and sustainable energy systems that transform challenges into opportunities across Nigeria and beyond."
+  },
+  "stats": [
+    {
+      "number": "500+",
+      "label": "Farmers Empowered"
+    },
+    {
+      "number": "50+",
+      "label": "Smart Homes"
+    },
+    {
+      "number": "98%",
+      "label": "Customer Satisfaction"
+    }
+  ],
+  "about": {
+    "title": "About BetaX",
+    "content": "At BetaX Technologies, we believe in bridging the gap between advanced technology and practical, everyday use. Our mission is to make modern technology affordable, reliable, and accessible across Nigeria.\n\nWe specialize in:\n- Smart Agriculture Solutions\n- Sustainable Energy Systems\n- IoT-powered Smart Home Technology\n\nFounded with a vision to transform how Nigerians interact with technology, we're committed to delivering solutions that work in real-world conditions."
+  }
+}
