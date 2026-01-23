@@ -1,18 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BetaX Admin Dashboard</title>
-    <!-- Include the Netlify CMS script -->
-    <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-    <!-- Include Netlify Identity Widget for authentication -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4da6ff, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .card p {
+            color: #aaa;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #4da6ff, #00d4aa);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(77, 166, 255, 0.3);
+        }
+
+        .instructions {
+            background: rgba(77, 166, 255, 0.1);
+            border: 1px solid rgba(77, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 40px;
+        }
+
+        .instructions h3 {
+            color: #4da6ff;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #ccc;
+            line-height: 1.8;
+        }
+
+        .instructions code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- This div is where the CMS will be injected -->
+    <div class="container">
+        <h1>🚀 BetaX Admin Dashboard</h1>
+        <p class="subtitle">Click any section below to edit content on GitHub</p>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">🏠</div>
+                <h2>Homepage</h2>
+                <p>Edit hero title, subtitle, and statistics displayed on the homepage.</p>
+                <a href="https://github.com/BetaX070/betax-website/edit/main/BetaX/_data/homepage.json" target="_blank"
+                    class="btn">Edit Homepage</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <h2>Products</h2>
+                <p>Add, edit, or remove products and solutions.</p>
+                <a href="https://github.com/BetaX070/betax-website/tree/main/BetaX/_data/products" target="_blank"
+                    class="btn">Manage Products</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <h2>Team Members</h2>
+                <p>Update team member information and photos.</p>
+                <a href="https://github.com/BetaX070/betax-website/tree/main/BetaX/_data/team" target="_blank"
+                    class="btn">Manage Team</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📞</div>
+                <h2>Contact Info</h2>
+                <p>Update email, phone, address, and social links.</p>
+                <a href="https://github.com/BetaX070/betax-website/edit/main/BetaX/_data/contact.json" target="_blank"
+                    class="btn">Edit Contact</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h2>Site Settings</h2>
+                <p>Change company name, tagline, and footer text.</p>
+                <a href="https://github.com/BetaX070/betax-website/edit/main/BetaX/_data/settings.json" target="_blank"
+                    class="btn">Edit Settings</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌐</div>
+                <h2>View Live Site</h2>
+                <p>See your changes on the live website.</p>
+                <a href="https://betax-website.vercel.app" target="_blank" class="btn">View Website</a>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📝 How to Edit Content</h3>
+            <ol>
+                <li>Click any <strong>"Edit"</strong> button above</li>
+                <li>GitHub will open - click the <strong>pencil icon</strong> to edit</li>
+                <li>Make your changes (just edit the text between quotes)</li>
+                <li>Scroll down and click <strong>"Commit changes"</strong></li>
+                <li>Wait 30 seconds - your site will automatically update!</li>
+            </ol>
+        </div>
+
+        <p class="footer">
+            BetaX Technologies Admin Dashboard<br>
+            Changes are saved to GitHub and auto-deployed to Vercel
+        </p>
+    </div>
 </body>
 
 </html>
