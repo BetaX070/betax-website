@@ -1,5 +1,5 @@
 ---
-name: "Umar Muhammad"
+name: "Omar"
 title: "CEO & Founder"
 tagline: "\"Innovation through Technology\""
 photo: "/CEO.jpg"
