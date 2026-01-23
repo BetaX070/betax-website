@@ -133,8 +133,23 @@ function clearFieldError(field) {
 // =========================================
 // WHATSAPP INTEGRATION
 // =========================================
-function initWhatsAppSubmission() {
-    // WhatsApp number (without + and country code)
+async function initWhatsAppSubmission() {
+    // Load WhatsApp number from contact.json (single source of truth)
+    try {
+        const response = await fetch('/_data/contact.json');
+        if (response.ok) {
+            const contactData = await response.json();
+            if (contactData && contactData.phone) {
+                // Remove all non-numeric characters
+                window.WHATSAPP_NUMBER = contactData.phone.replace(/[^0-9]/g, '');
+                return;
+            }
+        }
+    } catch (error) {
+        console.warn('Could not load phone from contact.json, using fallback');
+    }
+
+    // Fallback number (update _data/contact.json to change)
     window.WHATSAPP_NUMBER = '2347035459321';
 }
 

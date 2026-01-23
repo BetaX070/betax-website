@@ -12,7 +12,7 @@ fullDescription: |
   - Reduces water usage by up to 40%
   
   Perfect for small to large-scale farms across Nigeria.
-image: "/assets/products/irrigate-smart.jpg"
+image: "/IrrigateSmart.jpg"
 featured: true
 order: 1
 active: true

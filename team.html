@@ -227,6 +227,25 @@
         </div>
     </section>
 
+    <!-- Team Grid Section -->
+    <section class="team-members-section" style="padding: 5rem 0; background: var(--color-bg);">
+        <div class="container">
+            <div class="section-header scroll-reveal" style="text-align: center; margin-bottom: 3rem;">
+                <span class="section-tag">Our Team</span>
+                <h2 class="section-title">Meet the Team</h2>
+                <p class="section-description">The talented people behind BetaX Technologies</p>
+            </div>
+
+            <div id="team-grid" class="team-grid">
+                <!-- Team members loaded dynamically by cms-loader.js -->
+                <div class="loading-placeholder"
+                    style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--color-text-gray);">
+                    <p>Loading team members...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Vision Section -->
     <section class="vision-section">
         <div class="container scroll-reveal">
@@ -317,8 +336,6 @@
         </svg>
     </div>
 
-    <!-- JavaScript -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script src="js/main.js"></script>
     <script src="js/cms-loader.js"></script>
 </body>

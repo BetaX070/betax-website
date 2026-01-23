@@ -1,13 +1,17 @@
 /**
  * BetaX CMS Content Loader
- * Loads content from _data directory and updates the website dynamically
+ * Loads content from local _data files (no external API needed)
  */
+
+// Known files - update this list when adding new content
+const KNOWN_PRODUCTS = ['irrigate-smart', 'solar-plant', 'ignite-home'];
+const KNOWN_TEAM = ['umar-muhammad']; // Add new team member filenames here
 
 // Utility function to fetch JSON data
 async function fetchData(path) {
     try {
         const response = await fetch(path);
-        if (!response.ok) throw new Error(`Failed to fetch ${path}`);
+        if (!response.ok) return null;
         return await response.json();
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -15,30 +19,40 @@ async function fetchData(path) {
     }
 }
 
-// Parse markdown frontmatter and content
+// Parse markdown frontmatter
 function parseMarkdown(text) {
-    const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+    const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---/;
     const match = text.match(frontmatterRegex);
 
     if (!match) return { meta: {}, content: text };
 
     const frontmatter = match[1];
-    const content = match[2];
+    const content = text.substring(match[0].length).trim();
     const meta = {};
 
-    frontmatter.split('\n').forEach(line => {
-        const [key, ...valueParts] = line.split(':');
-        if (key && valueParts.length) {
-            let value = valueParts.join(':').trim();
-            // Remove quotes if present
-            value = value.replace(/^["']|["']$/g, '');
-            // Handle multiline (|)
-            if (value === '|') return;
-            meta[key.trim()] = value;
+    // Parse YAML frontmatter
+    const lines = frontmatter.split('\n');
+    let currentKey = null;
+    let currentValue = '';
+
+    lines.forEach(line => {
+        if (line.match(/^\s*[\w]+:/)) {
+            if (currentKey) {
+                meta[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
+            }
+            const [key, ...valueParts] = line.split(':');
+            currentKey = key.trim();
+            currentValue = valueParts.join(':').trim();
+        } else if (currentKey) {
+            currentValue += '\n' + line;
         }
     });
 
-    return { meta, content: content.trim() };
+    if (currentKey) {
+        meta[currentKey] = currentValue.trim().replace(/^["']|["']$/g, '');
+    }
+
+    return { meta, content };
 }
 
 // Load homepage content
@@ -46,7 +60,6 @@ async function loadHomepageContent() {
     const data = await fetchData('/_data/homepage.json');
     if (!data) return;
 
-    // Update hero section
     if (data.hero) {
         const heroTitle = document.querySelector('.hero-title');
         const heroSubtitle = document.querySelector('.hero-subtitle');
@@ -54,46 +67,45 @@ async function loadHomepageContent() {
         if (heroSubtitle) heroSubtitle.textContent = data.hero.subtitle;
     }
 
-    // Update stats
     if (data.stats) {
         const statsContainer = document.querySelector('.stats-grid');
         if (statsContainer) {
-            const statsHTML = data.stats.map(stat => `
+            statsContainer.innerHTML = data.stats.map(stat => `
                 <div class="stat-card scroll-reveal">
                     <div class="stat-number">${stat.number}</div>
                     <div class="stat-label">${stat.label}</div>
                 </div>
             `).join('');
-            statsContainer.innerHTML = statsHTML;
         }
     }
 }
 
-// Load products
+// Load products from known file list
 async function loadProducts() {
     try {
-        // Fetch all product markdown files
         const products = [];
-        const productFiles = ['irrigate-smart', 'solar-plant', 'ignite-home'];
 
-        for (const file of productFiles) {
-            const response = await fetch(`/_data/products/${file}.md`);
-            if (response.ok) {
-                const text = await response.text();
-                const { meta } = parseMarkdown(text);
-                if (meta.active !== 'false') {
-                    products.push(meta);
+        for (const filename of KNOWN_PRODUCTS) {
+            try {
+                const response = await fetch(`/_data/products/${filename}.md`);
+                if (response.ok) {
+                    const text = await response.text();
+                    const { meta } = parseMarkdown(text);
+                    if (meta.active !== 'false') {
+                        products.push(meta);
+                    }
                 }
+            } catch (e) {
+                console.log(`Could not load ${filename}`);
             }
         }
 
-        // Sort by order
         products.sort((a, b) => parseInt(a.order || 999) - parseInt(b.order || 999));
 
         // Update solutions page
         const solutionsGrid = document.querySelector('.solutions-grid');
-        if (solutionsGrid) {
-            const productsHTML = products.map(product => `
+        if (solutionsGrid && products.length) {
+            solutionsGrid.innerHTML = products.map(product => `
                 <div class="card product-card scroll-reveal delay-100" style="flex: 1;">
                     <div class="card-image">
                         <img src="${product.image}" alt="${product.name}">
@@ -107,14 +119,14 @@ async function loadProducts() {
                     </div>
                 </div>
             `).join('');
-            solutionsGrid.innerHTML = productsHTML;
         }
 
         // Update homepage featured products
         const featuredProducts = products.filter(p => p.featured === 'true');
         const homepageGrid = document.querySelector('#homepage-solutions-grid');
-        if (homepageGrid && featuredProducts.length) {
-            const featuredHTML = featuredProducts.slice(0, 3).map(product => `
+        if (homepageGrid) {
+            const displayProducts = featuredProducts.length ? featuredProducts : products;
+            homepageGrid.innerHTML = displayProducts.slice(0, 3).map(product => `
                 <div class="card scroll-reveal">
                     <div class="card-image">
                         <img src="${product.image}" alt="${product.name}">
@@ -126,7 +138,6 @@ async function loadProducts() {
                     </div>
                 </div>
             `).join('');
-            homepageGrid.innerHTML = featuredHTML;
         }
     } catch (error) {
         console.error('Error loading products:', error);
@@ -136,22 +147,53 @@ async function loadProducts() {
 // Load team members
 async function loadTeam() {
     try {
-        const response = await fetch('/_data/team/umar-muhammad.md');
-        if (!response.ok) return;
+        const teamMembers = [];
 
-        const text = await response.text();
-        const { meta } = parseMarkdown(text);
+        for (const filename of KNOWN_TEAM) {
+            try {
+                const response = await fetch(`/_data/team/${filename}.md`);
+                if (response.ok) {
+                    const text = await response.text();
+                    const { meta } = parseMarkdown(text);
+                    if (meta.active !== 'false') {
+                        teamMembers.push(meta);
+                    }
+                }
+            } catch (e) {
+                console.log(`Could not load ${filename}`);
+            }
+        }
 
-        // Update CEO info on team page
-        const ceoName = document.querySelector('.ceo-name');
-        const ceoTitle = document.querySelector('.ceo-title');
-        const ceoTagline = document.querySelector('.ceo-tagline');
-        const ceoImage = document.querySelector('.ceo-image-container img');
+        teamMembers.sort((a, b) => parseInt(a.order || 999) - parseInt(b.order || 999));
 
-        if (ceoName) ceoName.textContent = meta.name;
-        if (ceoTitle) ceoTitle.textContent = meta.title;
-        if (ceoTagline) ceoTagline.textContent = meta.tagline;
-        if (ceoImage) ceoImage.src = meta.photo;
+        // Update team grid if exists
+        const teamGrid = document.querySelector('#team-grid');
+        if (teamGrid && teamMembers.length) {
+            teamGrid.innerHTML = teamMembers.map(member => `
+                <div class="team-member-card scroll-reveal">
+                    <div class="team-member-image">
+                        <img src="${member.photo}" alt="${member.name}">
+                    </div>
+                    <h3 class="team-member-name">${member.name}</h3>
+                    <p class="team-member-title">${member.title}</p>
+                    ${member.tagline ? `<p class="team-member-tagline">"${member.tagline}"</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Update single CEO display (fallback)
+        if (teamMembers.length > 0) {
+            const ceo = teamMembers[0];
+            const ceoName = document.querySelector('.ceo-name');
+            const ceoTitle = document.querySelector('.ceo-title');
+            const ceoTagline = document.querySelector('.ceo-tagline');
+            const ceoImage = document.querySelector('.ceo-image-container img');
+
+            if (ceoName) ceoName.textContent = ceo.name;
+            if (ceoTitle) ceoTitle.textContent = ceo.title;
+            if (ceoTagline) ceoTagline.textContent = `"${ceo.tagline}"`;
+            if (ceoImage) ceoImage.src = ceo.photo;
+        }
     } catch (error) {
         console.error('Error loading team:', error);
     }
@@ -162,7 +204,6 @@ async function loadContactInfo() {
     const data = await fetchData('/_data/contact.json');
     if (!data) return;
 
-    // Update all email links
     document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
         link.href = `mailto:${data.email}`;
         if (link.textContent.includes('@')) {
@@ -170,19 +211,11 @@ async function loadContactInfo() {
         }
     });
 
-    // Update all phone links
     document.querySelectorAll('a[href^="tel:"]').forEach(link => {
         const cleanPhone = data.phone.replace(/\s/g, '');
         link.href = `tel:${cleanPhone}`;
         if (link.textContent.includes('+')) {
             link.textContent = data.phone;
-        }
-    });
-
-    // Update address
-    document.querySelectorAll('p').forEach(p => {
-        if (p.textContent.includes('Zoo Road') || p.textContent.includes('Kano')) {
-            p.textContent = data.address;
         }
     });
 }
@@ -191,21 +224,18 @@ async function loadContactInfo() {
 document.addEventListener('DOMContentLoaded', async function () {
     const currentPage = window.location.pathname;
 
-    // Load contact info on all pages (footer)
     await loadContactInfo();
 
-    // Load page-specific content
-    if (currentPage.endsWith('index.html') || currentPage === '/') {
+    if (currentPage.endsWith('index.html') || currentPage === '/' || currentPage === '') {
         await loadHomepageContent();
-        await loadProducts(); // For featured products
+        await loadProducts();
     } else if (currentPage.includes('solutions.html')) {
         await loadProducts();
     } else if (currentPage.includes('team.html')) {
         await loadTeam();
     }
 
-    // Re-trigger scroll animations after content loads
     if (typeof initScrollReveal === 'function') {
-        initScrollReveal();
+        setTimeout(initScrollReveal, 100);
     }
 });
