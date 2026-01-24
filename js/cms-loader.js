@@ -105,10 +105,12 @@ async function loadProducts() {
         // Update solutions page
         const solutionsGrid = document.querySelector('.solutions-grid');
         if (solutionsGrid && products.length) {
+            console.log('Loading products:', products);
             solutionsGrid.innerHTML = products.map(product => `
                 <div class="card product-card scroll-reveal delay-100" style="flex: 1;">
                     <div class="card-image">
-                        <img src="${product.image}" alt="${product.name}">
+                        <img src="${product.image}" alt="${product.name}" 
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%230052CC%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27white%27 font-family=%27Arial%27 font-size=%2724%27 font-weight=%27bold%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E${product.name}%3C/text%3E%3C/svg%3E';">
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">${product.name}</h3>
@@ -116,7 +118,7 @@ async function loadProducts() {
                         <div class="card-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                             <a href="https://wa.me/2347035459321?text=Hello%20BetaX!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}" 
                                class="btn btn-primary" 
-                               target="_blank" 
+                                target="_blank" 
                                rel="noopener noreferrer" 
                                style="flex: 1;">
                                 Place Order
@@ -126,6 +128,8 @@ async function loadProducts() {
                     </div>
                 </div>
             `).join('');
+        } else if (solutionsGrid) {
+            console.error('No products found or failed to load');
         }
 
         // Update homepage featured products
@@ -133,10 +137,12 @@ async function loadProducts() {
         const homepageGrid = document.querySelector('#homepage-solutions-grid');
         if (homepageGrid) {
             const displayProducts = featuredProducts.length ? featuredProducts : products;
+            console.log('Loading homepage products:', displayProducts.slice(0, 3));
             homepageGrid.innerHTML = displayProducts.slice(0, 3).map(product => `
                 <div class="card scroll-reveal">
                     <div class="card-image">
-                        <img src="${product.image}" alt="${product.name}">
+                        <img src="${product.image}" alt="${product.name}"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%230052CC%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27white%27 font-family=%27Arial%27 font-size=%27224%27 font-weight=%27bold%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E${product.name}%3C/text%3E%3C/svg%3E';">
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">${product.name}</h3>
