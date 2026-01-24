@@ -7,6 +7,34 @@
 const KNOWN_PRODUCTS = ['irrigate-smart', 'solar-plant', 'ignite-home'];
 const KNOWN_TEAM = ['umar-muhammad']; // Add new team member filenames here
 
+// Hardcoded fallback product data (ensures products always show)
+const FALLBACK_PRODUCTS = [
+    {
+        name: "IrrigateSmart",
+        description: "IoT-powered irrigation automation system for modern farming",
+        image: "/assets/images/products/product1/main.jpg",
+        featured: "true",
+        order: "1",
+        active: "true"
+    },
+    {
+        name: "SolarPlant",
+        description: "Sustainable solar energy solutions for homes and businesses",
+        image: "/assets/images/products/product2/main.jpg",
+        featured: "true",
+        order: "2",
+        active: "true"
+    },
+    {
+        name: "IgniteHome",
+        description: "Complete smart home automation for modern living",
+        image: "/assets/images/products/product3/main.jpg",
+        featured: "true",
+        order: "3",
+        active: "true"
+    }
+];
+
 // Utility function to fetch JSON data
 async function fetchData(path) {
     try {
@@ -100,13 +128,17 @@ async function loadProducts() {
             }
         }
 
-        products.sort((a, b) => parseInt(a.order || 999) - parseInt(b.order || 999));
+        // If no products loaded from files, use fallback
+        const displayProducts = products.length > 0 ? products : FALLBACK_PRODUCTS;
+        console.log('Products to display:', displayProducts);
+
+        displayProducts.sort((a, b) => parseInt(a.order || 999) - parseInt(b.order || 999));
 
         // Update solutions page
         const solutionsGrid = document.querySelector('.solutions-grid');
-        if (solutionsGrid && products.length) {
-            console.log('Loading products:', products);
-            solutionsGrid.innerHTML = products.map(product => `
+        if (solutionsGrid && displayProducts.length) {
+            console.log('Loading products:', displayProducts);
+            solutionsGrid.innerHTML = displayProducts.map(product => `
                 <div class="card product-card scroll-reveal delay-100" style="flex: 1;">
                     <div class="card-image">
                         <img src="${product.image}" alt="${product.name}" 
@@ -133,12 +165,12 @@ async function loadProducts() {
         }
 
         // Update homepage featured products
-        const featuredProducts = products.filter(p => p.featured === 'true');
+        const featuredProducts = displayProducts.filter(p => p.featured === 'true');
         const homepageGrid = document.querySelector('#homepage-solutions-grid');
         if (homepageGrid) {
-            const displayProducts = featuredProducts.length ? featuredProducts : products;
-            console.log('Loading homepage products:', displayProducts.slice(0, 3));
-            homepageGrid.innerHTML = displayProducts.slice(0, 3).map(product => `
+            const homeProducts = featuredProducts.length ? featuredProducts : displayProducts;
+            console.log('Loading homepage products:', homeProducts.slice(0, 3));
+            homepageGrid.innerHTML = homeProducts.slice(0, 3).map(product => `
                 <div class="card scroll-reveal">
                     <div class="card-image">
                         <img src="${product.image}" alt="${product.name}"
@@ -153,7 +185,7 @@ async function loadProducts() {
             `).join('');
         }
     } catch (error) {
-        console.error('Error loading products:', error);
+        console.error('Error in loadProducts:', error);
     }
 }
 
