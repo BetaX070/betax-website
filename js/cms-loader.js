@@ -113,8 +113,15 @@ async function loadProducts() {
                     <div class="card-content">
                         <h3 class="card-title">${product.name}</h3>
                         <p class="card-description">${product.description}</p>
-                        <div class="card-actions">
-                            <a href="contact.html" class="btn btn-primary">Contact Us</a>
+                        <div class="card-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <a href="https://wa.me/2347035459321?text=Hello%20BetaX!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}" 
+                               class="btn btn-primary" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               style="flex: 1;">
+                                Place Order
+                            </a>
+                            <a href="contact.html" class="btn btn-outline" style="flex: 1;">Contact Us</a>
                         </div>
                     </div>
                 </div>
