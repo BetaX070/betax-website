@@ -11,9 +11,17 @@
    ========================================= */
 :root {
   /* Colors - Light Mode - Cobalt Blue Theme */
+  --color-primary: #001B44;
+  /* Deep Cobalt Blue */
   --color-primary-blue: #0047AB;
+  /* Main Cobalt Blue */
   --color-primary-light: #4A90E2;
+  /* Light Blue */
+  --color-accent: #001B44;
+  /* Accent Cobalt */
   --color-accent-cobalt: #001B44;
+  --color-accent-orange: #0066CC;
+  /* Changed from orange to medium blue */
   --color-bg-light: #F8FAFC;
   --color-bg-white: #FFFFFF;
   --color-text-dark: #0F172A;
@@ -21,8 +29,8 @@
   --color-border-light: #E2E8F0;
 
   /* Gradients - Blue Theme */
-  --gradient-primary: linear-gradient(135deg, #0047AB 0%, #4A90E2 100%);
-  --gradient-hero: linear-gradient(135deg, rgba(0, 71, 171, 0.9) 0%, rgba(74, 144, 226, 0.9) 100%);
+  --gradient-primary: linear-gradient(135deg, #001B44 0%, #0047AB 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(0, 27, 68, 0.95) 0%, rgba(0, 71, 171, 0.95) 100%);
   --gradient-accent: linear-gradient(90deg, #001B44 0%, #0047AB 100%);
 
   /* Shadows */
