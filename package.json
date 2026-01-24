@@ -1,0 +1,7 @@
+{
+    "name": "betax-website",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "BetaX Technologies Website",
+    "private": true
+}
