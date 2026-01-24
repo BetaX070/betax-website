@@ -1,13 +1,16 @@
 backend:
-  name: git-gateway
-  branch: main # Branch to update (main or master)
+  name: github
+  repo: BetaX070/betax-website
+  branch: main
+  base_url: https://betax-website.vercel.app
+  auth_endpoint: /api/auth
 
-# Publish mode: editorial workflow allows draft/review/publish
+# Publish mode
 publish_mode: simple
 
 # Media files will be stored in the repo
-media_folder: "assets/uploads" # Where media files will be stored
-public_folder: "/assets/uploads" # The public path to media files
+media_folder: "BetaX/assets/uploads"
+public_folder: "/assets/uploads"
 
 collections:
   # Homepage Content
@@ -16,7 +19,7 @@ collections:
     files:
       - label: "Homepage Content"
         name: "homepage"
-        file: "_data/homepage.json"
+        file: "BetaX/_data/homepage.json"
         fields:
           - label: "Hero Section"
             name: "hero"
@@ -42,7 +45,7 @@ collections:
   # Products / Solutions
   - name: "products"
     label: "Products"
-    folder: "_data/products"
+    folder: "BetaX/_data/products"
     create: true
     slug: "{{slug}}"
     fields:
@@ -57,7 +60,7 @@ collections:
   # Team Members
   - name: "team"
     label: "Team Members"
-    folder: "_data/team"
+    folder: "BetaX/_data/team"
     create: true
     slug: "{{slug}}"
     fields:
@@ -74,7 +77,7 @@ collections:
   # News / Blog Posts
   - name: "news"
     label: "News & Blog"
-    folder: "_data/news"
+    folder: "BetaX/_data/news"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -102,7 +105,7 @@ collections:
     files:
       - label: "Contact Details"
         name: "contact"
-        file: "_data/contact.json"
+        file: "BetaX/_data/contact.json"
         fields:
           - {label: "Email", name: "email", widget: "string"}
           - {label: "Phone", name: "phone", widget: "string"}
@@ -121,7 +124,7 @@ collections:
     files:
       - label: "General Settings"
         name: "general"
-        file: "_data/settings.json"
+        file: "BetaX/_data/settings.json"
         fields:
           - {label: "Company Name", name: "companyName", widget: "string", default: "BetaX Technologies"}
           - {label: "Company Tagline", name: "tagline", widget: "string"}
