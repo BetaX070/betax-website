@@ -12,7 +12,7 @@ fullDescription: |
   - Enhanced home security integration
   
   Experience the future of home living with IgniteHome.
-image: "/IgniteHome.jpg"
+image: "/assets/images/products/product3/main.jpg"
 featured: true
 order: 3
 active: true

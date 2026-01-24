@@ -12,7 +12,7 @@ fullDescription: |
   - 25-year performance warranty
   
   Join the renewable energy revolution with SolarPlant.
-image: "/SolarPlant.jpg"
+image: "/assets/images/products/product2/main.jpg"
 featured: true
 order: 2
 active: true
