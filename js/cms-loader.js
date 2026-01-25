@@ -1,6 +1,7 @@
 /**
  * BetaX CMS Content Loader
  * Loads content from local _data files (no external API needed)
+ * @version 2.0 - with path normalization
  */
 
 // Known files - update this list when adding new content
@@ -64,6 +65,18 @@ function normalizePath(p) {
     return base ? base + '/' + p.replace(/^\.\//, '') : p.replace(/^\.\//, '');
 }
 // ------- END path normalization -------
+
+// ------- HTML escaping for XSS prevention -------
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+// ------- END HTML escaping -------
 
 
 // Utility function to fetch JSON data
@@ -173,12 +186,12 @@ async function loadProducts() {
             solutionsGrid.innerHTML = displayProducts.map(product => `
                 <div class="card product-card scroll-reveal delay-100" style="flex: 1;">
                     <div class="card-image">
-                        <img src="${normalizePath(product.image)}" alt="${product.name}" 
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%230052CC%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27white%27 font-family=%27Arial%27 font-size=%2724%27 font-weight=%27bold%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E${product.name}%3C/text%3E%3C/svg%3E';">
+                        <img src="${normalizePath(product.image)}" alt="${escapeHtml(product.name)}" 
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%230052CC%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27white%27 font-family=%27Arial%27 font-size=%2724%27 font-weight=%27bold%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E${escapeHtml(product.name)}%3C/text%3E%3C/svg%3E';">
                     </div>
                     <div class="card-content">
-                        <h3 class="card-title">${product.name}</h3>
-                        <p class="card-description">${product.description}</p>
+                        <h3 class="card-title">${escapeHtml(product.name)}</h3>
+                        <p class="card-description">${escapeHtml(product.description)}</p>
                         <div class="card-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                             <a href="https://wa.me/2347035459321?text=Hello%20BetaX!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}" 
                                class="btn btn-primary" 
@@ -205,12 +218,12 @@ async function loadProducts() {
             homepageGrid.innerHTML = homeProducts.slice(0, 3).map(product => `
                 <div class="card scroll-reveal">
                     <div class="card-image">
-                        <img src="${normalizePath(product.image)}" alt="${product.name}"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%230052CC%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27white%27 font-family=%27Arial%27 font-size=%2724%27 font-weight=%27bold%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E${product.name}%3C/text%3E%3C/svg%3E';">
+                        <img src="${normalizePath(product.image)}" alt="${escapeHtml(product.name)}"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%230052CC%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27white%27 font-family=%27Arial%27 font-size=%2724%27 font-weight=%27bold%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E${escapeHtml(product.name)}%3C/text%3E%3C/svg%3E';">
                     </div>
                     <div class="card-content">
-                        <h3 class="card-title">${product.name}</h3>
-                        <p class="card-description">${product.description}</p>
+                        <h3 class="card-title">${escapeHtml(product.name)}</h3>
+                        <p class="card-description">${escapeHtml(product.description)}</p>
                         <a href="solutions.html" class="btn btn-outline">Learn More</a>
                     </div>
                 </div>

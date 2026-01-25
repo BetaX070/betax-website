@@ -1,33 +1,49 @@
 export default async function handler(req, res) {
-    const { code } = req.query;
+  const { code } = req.query;
 
-    if (!code) {
-        return res.status(400).json({ error: 'No code provided' });
+  if (!code) {
+    return res.status(400).json({ error: 'No code provided' });
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code: code,
+      }),
+    });
+
+    const data = await tokenResponse.json();
+
+    if (data.error) {
+      return res.status(400).json({ error: data.error_description });
     }
 
-    try {
-        // Exchange code for access token
-        const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                client_id: 'Ov23liNx2QAADrNHViQW',
-                client_secret: '4e5147be7e1951b5ecb4fe6277e0461a6367d94e',
-                code: code,
-            }),
-        });
+    // Security: Validate token exists
+    if (!data.access_token) {
+      throw new Error('No access token received from GitHub');
+    }
 
-        const data = await tokenResponse.json();
+    // Security: Add security headers
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'unsafe-inline'");
 
-        if (data.error) {
-            return res.status(400).json({ error: data.error_description });
-        }
+    // Security: Use safe token transmission (JSON in postMessage, not template literal)
+    // Note: Using * for origin because we don't know the exact opener origin in this serverless function
+    // Alternative: configure ALLOWED_ORIGINS in env vars for production
+    const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
 
-        // Return token to CMS
-        res.send(`
+    // Return token to CMS
+    res.send(`
       <!DOCTYPE html>
       <html>
         <head>
@@ -36,25 +52,27 @@ export default async function handler(req, res) {
         <body>
           <script>
             (function() {
-              function receiveMessage(e) {
-                console.log("Received message:", e);
+              if (window.opener) {
+                // Security: Send token as structured data, not interpolated string
+                const tokenData = ${JSON.stringify({
+      token: data.access_token,
+      provider: 'github'
+    })};
                 window.opener.postMessage(
-                  'authorization:github:success:${JSON.stringify({
-            token: data.access_token,
-            provider: 'github'
-        })}',
-                  e.origin
+                  'authorization:github:success:' + JSON.stringify(tokenData),
+                  '${allowedOrigin}'
                 );
+                window.close();
+              } else {
+                document.body.innerHTML = '<h1>Authentication successful! You can close this window.</h1>';
               }
-              window.addEventListener("message", receiveMessage, false);
-              window.opener.postMessage("authorizing:github", "*");
             })();
           </script>
           <p>Authorizing... You can close this window.</p>
         </body>
       </html>
     `);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to exchange code for token' });
-    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to exchange code for token' });
+  }
 }
