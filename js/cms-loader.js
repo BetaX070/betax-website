@@ -2,6 +2,7 @@
  * BetaX CMS Content Loader
  * Loads content from local _data files (no external API needed)
  * @version 2.0 - with path normalization
+ * @deployed 2026-01-25
  */
 
 // Known files - update this list when adding new content

@@ -24,20 +24,20 @@ function initNavigation() {
 
     if (!navbar) return;
 
-    // Sticky navigation on scroll
-    window.addEventListener('scroll', function () {
-        if (window.scrollY > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
+    // Sticky navigation on scroll (handled by consolidated scroll handler below)
 
-    // Highlight active nav link based on current page
+    // Highlight active nav link based on current page (improved exactnessmatching)
     const currentPath = window.location.pathname;
+    const currentPage = currentPath.split('/').pop() || 'index.html';
+
     navLinks.forEach(link => {
-        if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href'))) {
-            link.classList.add('active');
+        const href = link.getAttribute('href');
+        if (href) {
+            const linkPage = href.split('/').pop();
+            // Exact match instead of substring to avoid false positives
+            if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')) {
+                link.classList.add('active');
+            }
         }
     });
 
@@ -49,8 +49,15 @@ function initNavigation() {
                 e.preventDefault();
                 const target = document.querySelector(href);
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    target.scrollIntoView({ behavior: 'smooth' });
                 }
+            }
+        });
+    });
+}
+if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
             }
         });
     });
@@ -130,13 +137,7 @@ function initBackToTop() {
     const backToTop = document.querySelector('.back-to-top');
     if (!backToTop) return;
 
-    window.addEventListener('scroll', function () {
-        if (window.scrollY > 500) {
-            backToTop.classList.add('visible');
-        } else {
-            backToTop.classList.remove('visible');
-        }
-    });
+    // Scroll visibility handled by consolidated scroll handler
 
     backToTop.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -149,13 +150,62 @@ function initBackToTop() {
 function initScrollProgress() {
     const progressBar = document.querySelector('.progress-bar');
     if (!progressBar) return;
-
-    window.addEventListener('scroll', function () {
-        const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrolled = (window.scrollY / windowHeight) * 100;
-        progressBar.style.width = scrolled + '%';
-    });
+    // Progress calculation handled by consolidated scroll handler below
 }
+
+// =========================================
+// CONSOLIDATED SCROLL HANDLER (Performance Optimization)
+// =========================================
+(function initConsolidatedScrollHandler() {
+    const navbar = document.querySelector('.navbar');
+    const backToTop = document.querySelector('.back-to-top');
+    const progressBar = document.querySelector('.progress-bar');
+
+    // Throttle helper to limit scroll handler execution
+    function throttle(func, delay) {
+        let lastCall = 0;
+        return function (...args) {
+            const now = Date.now();
+            if (now - lastCall >= delay) {
+                lastCall = now;
+                func.apply(this, args);
+            }
+        };
+    }
+
+    // Single scroll handler for all scroll-based features
+    const handleScroll = throttle(function () {
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        // Navbar sticky state
+        if (navbar) {
+            if (scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+
+        // Back to top button visibility
+        if (backToTop) {
+            if (scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }
+
+        // Progress bar
+        if (progressBar) {
+            const scrollPercent = (scrollY / (documentHeight - windowHeight)) * 100;
+            progressBar.style.width = Math.min(scrollPercent, 100) + '%';
+        }
+    }, 16); // ~60fps throttle
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+})();
 
 // =========================================
 // ANIMATED STATISTICS COUNTER
@@ -178,20 +228,28 @@ function initStats() {
         window.requestAnimationFrame(step);
     };
 
-    const statsObserver = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
+                entry.target.classList.add('counted');
                 const target = parseInt(entry.target.dataset.count);
+
+                // Security: Validate data-count exists and is a number
+                if (isNaN(target) || target === undefined) {
+                    console.warn('Invalid data-count attribute:', entry.target);
+                    return;
+                }
+
                 const suffix = entry.target.dataset.suffix || '';
-                entry.target.dataset.suffix = suffix;
+                // Store suffix before animation to avoid redundancy
                 animateValue(entry.target, 0, target, 2000);
-                statsObserver.unobserve(entry.target);
+                observer.unobserve(entry.target);
             }
         });
     }, { threshold: 0.5 });
 
     stats.forEach(stat => {
-        statsObserver.observe(stat);
+        observer.observe(stat);
     });
 }
 
